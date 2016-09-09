@@ -1,0 +1,64 @@
+//查询同一个用户是否选择了同一门课程
+SELECT COUNT(*)
+ FROM stutosub
+  WHERE stuId = #{stuId} AND subId = #{subId} and type = #{type}
+返回的是int类型
+
+@subintro
+//课程介绍页面，获取数据
+1、获取课程信息
+SELECT curnum AS 选课人数,singalIntro AS 课程简介,intro AS 课程介绍
+	FROM `subject`
+		WHERE subId = #{subId}
+返回subject对象
+2、获取教师信息
+SELECT a.teaId AS 教师编号,a.nickname AS 昵称
+	FROM teacher a JOIN subtotea b ON a.teaId = b.teaId
+		WHERE b.subId = #{subId}
+返回teacher对象
+3、获取教师组合粉丝数量
+SELECT COUNT(b.stuId) AS 数量
+	FROM subtotea a JOIN stutotea b ON a.teaId = b.teaId
+		WHERE a.subId = #{subId} AND b.isFans = 1
+返回一个int类型变量
+4、获取用户是否喜爱、关注和点赞的结果集
+SELECT isLove AS 喜爱状况,isPraise AS 点赞状态,isFocus AS 关注状态
+	FROM stutosub
+		WHERE stuId = #{stuId} AND subId = #{subId}
+返回一个state对象
+
+//获取teacher页面信息
+SELECT singalIntro AS 教师简介,intro AS 简介
+	FROM teacher
+		WHERE teaId = #{teaId}
+
+//获取选课页面信息
+SELECT a.subId AS 课程,b.curNum AS 已选人数,b.maxnum AS 最大人数,a.type AS 类型
+	FROM stutosub a JOIN `subject` b ON a.subId = b.subId
+		WHERE a.stuId = #{stuId}
+
+SELECT curnum AS 已选人数,maxnum AS 最大人数
+	FROM `subject`
+		WHERE subId = 'EDI0001'
+
+返回一个grab对象
+
+//提交选课信息
+INSERT INTO stutosub
+	VALUES(#{stuId},#{subId},'4','0','0','0')
+
+//超过时限，删除记录
+DELETE FROM stutosub
+	WHERE stuId = #{stuId}
+
+//确认课程信息
+UPDATE stutosub
+	SET type = 1
+		WHERE type = 4 AND stuId = #{stuId}
+
+//课程点赞、课程喜欢、课程订阅
+UPDATE stutosub
+	SET isPraise = 1
+		WHERE isPraise = 0 AND stuId = #{stuId} AND subId = #{subId}
+
+//教师订阅管理
